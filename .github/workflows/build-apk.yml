@@ -1,0 +1,75 @@
+name: iStream Android APK Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build & Release iStream APK
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 8.13
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+
+      - name: Setup Android SDK 35
+        run: |
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+          yes | "$SDKMANAGER" --licenses || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Build APK with Gradle
+        run: gradle assembleDebug -x test
+
+      - name: Prepare APK Asset
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/debug/app-debug.apk dist/iStream-v1.0.0.apk
+          ls -lh dist/
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iStream-v1.0.0-apk
+          path: dist/iStream-v1.0.0.apk
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.0
+          name: "iStream Android App v1.0.0"
+          body: |
+            ### iStream Official Android App (Release v1.0.0)
+            
+            Welcome to the dedicated **iStream** Movie & TV Series Android App!
+            
+            - **Reezn Mobile Cinema Layout**: Adaptive vertical movie posters and bottom navigation bar.
+            - **Hardware Acceleration**: Smooth 4K / HD streaming with instant player rotation.
+            - **Zero Ads & Zero Buffering**: Native ad-free playback.
+            
+            #### Download:
+            Click **`iStream-v1.0.0.apk`** below to install directly on your Android phone.
+          files: dist/iStream-v1.0.0.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
