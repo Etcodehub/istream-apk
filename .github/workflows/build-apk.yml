@@ -43,33 +43,34 @@ jobs:
       - name: Prepare APK Asset
         run: |
           mkdir -p dist
-          cp app/build/outputs/apk/debug/app-debug.apk dist/iStream-v1.0.0.apk
+          cp app/build/outputs/apk/debug/app-debug.apk dist/iStream-v1.0.1.apk
           ls -lh dist/
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: iStream-v1.0.0-apk
-          path: dist/iStream-v1.0.0.apk
+          name: iStream-v1.0.1-apk
+          path: dist/iStream-v1.0.1.apk
           if-no-files-found: error
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.0.0
-          name: "iStream Android App v1.0.0"
+          tag_name: v1.0.1
+          name: "iStream Android App v1.0.1"
           body: |
-            ### iStream Official Android App (Release v1.0.0)
+            ### iStream Official Android App (Release v1.0.1)
             
-            Welcome to the dedicated **iStream** Movie & TV Series Android App!
+            Fixed Vercel SSO / sign-up intercept by routing directly to the public production endpoint (`istream-web.vercel.app`).
             
+            - **No Sign Up Needed**: Direct, instant access to all movies and series.
             - **Reezn Mobile Cinema Layout**: Adaptive vertical movie posters and bottom navigation bar.
             - **Hardware Acceleration**: Smooth 4K / HD streaming with instant player rotation.
             - **Zero Ads & Zero Buffering**: Native ad-free playback.
             
             #### Download:
-            Click **`iStream-v1.0.0.apk`** below to install directly on your Android phone.
-          files: dist/iStream-v1.0.0.apk
+            Click **`iStream-v1.0.1.apk`** below to install directly on your Android phone.
+          files: dist/iStream-v1.0.1.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

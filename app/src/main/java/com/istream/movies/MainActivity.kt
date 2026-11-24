@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     private var originalOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
     companion object {
-        const val ISTREAM_URL = "https://istream-63dwus29p-habesha-tech.vercel.app/?app=apk"
+        const val ISTREAM_URL = "https://istream-web.vercel.app/?app=apk"
         const val APP_USER_AGENT_SUFFIX = " iStreamApp/1.0 (Android; iStream Cinema)"
     }
 
